@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estimasi Insentif Marketing</title>
+<style>
+:root{
+  --bg:#f4f6f8; --card:#fff; --ink:#1a2330; --muted:#667386; --line:#e1e6ec;
+  --accent:#0e6b5c; --accent-ink:#fff; --accent-soft:#e2f2ee;
+  --warn:#9a5b00; --warn-soft:#fff3dc; --bad:#b42318; --bad-soft:#fdecea; --good:#157347; --good-soft:#e5f5ec;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 110px}
+h1{font-size:23px;margin:0 0 4px;letter-spacing:-.01em}
+h1 span{color:var(--accent)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin:0 0 12px}
+.sub{margin:0 0 16px;color:var(--muted)}
+.pill{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:1px 10px;font-size:13px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+label.lbl{display:block;font-weight:600;margin-bottom:6px}
+input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 10px;min-width:0;max-width:100%}
+select#who{width:100%;font-size:16px;padding:11px 10px}
+input:focus,select:focus,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:#f5f7f9;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+.chip small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.chip b{font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.fld input{width:100%}
+.fld .tgt{font-size:12px;color:var(--muted);margin-top:3px}
+.fld.wide{grid-column:1/-1}
+@media (max-width:520px){ .grid{grid-template-columns:1fr} }
+details.card{padding:0}
+details.card>summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"▾";float:right;color:var(--muted)}
+details.card[open]>summary::after{content:"▴"}
+details.card .inner{padding:0 16px 16px}
+.hint{color:var(--muted);font-size:13px;margin:8px 0 0}
+.result .big{font-size:32px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--accent)}
+.result .cap{color:var(--muted);font-size:13px}
+.status{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.badge{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600}
+.badge.ok{background:var(--good-soft);color:var(--good)} .badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--bad-soft);color:var(--bad)}
+table.bd{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+.bd td{padding:7px 0;border-bottom:1px dashed var(--line);vertical-align:top}
+.bd td:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;padding-left:10px}
+.bd small{display:block;color:var(--muted);font-size:12px}
+.bd tr.sub td{font-weight:600;border-bottom:1px solid var(--line)}
+.bd tr.tot td{font-weight:800;font-size:16px;color:var(--accent);border-bottom:0;padding-top:10px}
+.tips{margin:14px 0 0;padding:12px 14px;background:var(--accent-soft);border-radius:10px}
+.tips b{color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.tips ul{margin:6px 0 0;padding-left:18px}
+.tips li{margin:3px 0}
+.ref{overflow-x:auto;margin-bottom:14px}
+.ref table{border-collapse:collapse;width:100%;font-size:13px;min-width:420px}
+.ref caption{text-align:left;font-weight:600;padding-bottom:6px}
+.ref th,.ref td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.ref th{background:#fafbfc;color:var(--muted);font-weight:600}
+.ref td.hl{background:var(--accent-soft)} .ref td.now{background:var(--accent);color:#fff;font-weight:700}
+.ref th.hl{background:var(--accent-soft);color:var(--accent)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(20,30,50,.08);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.bar div{max-width:760px;margin:0 auto;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.bar span{color:var(--muted);font-size:13px}
+.bar b{font-size:20px;color:var(--accent);font-variant-numeric:tabular-nums}
+.foot{color:var(--muted);font-size:12px;margin-top:6px}
+textarea{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 10px;width:100%;resize:vertical;min-height:84px}
+textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.tf{margin-bottom:14px}
+.tf-h{font-weight:700;margin-bottom:4px}
+.trow{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px dashed var(--line)}
+.trow small{display:block;color:var(--muted);font-size:12px}
+.trow input{width:100%;text-align:right}
+.pv{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pvchip{background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:2px 8px;font-size:12px}
+.pvchip.bad{background:var(--bad-soft);color:var(--bad)}
+.subtot{font-weight:700;color:var(--accent);font-size:14px;margin-top:2px}
+.ref td.left{text-align:left}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Estimasi <span>Insentif</span></h1>
+  <p class="sub">Pilih namamu, isi pencapaian bulan ini, estimasi insentif langsung terhitung. <span class="pill" id="periodLabel"></span></p>
+
+  <section class="card">
+    <label class="lbl" for="who">Nama</label>
+    <select id="who"></select>
+    <div class="chips" id="profile" hidden></div>
+  </section>
+
+  <div id="work" hidden>
+    <div id="sales"></div>
+    <section class="card">
+      <h2>Pencapaian bulan ini</h2>
+      <div class="grid">
+        <div class="fld"><label for="f_poin">Poin penjualan</label><input id="f_poin" data-f="poin" type="number" inputmode="decimal" min="0" step="any" placeholder="0"><div class="tgt">Terisi otomatis dari kolom penjualan, boleh diubah manual.</div></div>
+        <div class="fld"><label for="f_unit">Unit sales booking</label><input id="f_unit" data-f="unit" type="number" inputmode="decimal" min="0" step="any" placeholder="0"><div class="tgt">Otomatis: motor 1 unit = 1, mobil 1 unit = 3. Boleh diubah manual.</div></div>
+        <div class="fld wide" id="spWrap" hidden><label for="f_special" id="spLabel">Unit MMCY</label><input id="f_special" data-f="special" type="number" inputmode="decimal" min="0" step="any" placeholder="0"><div class="tgt" id="spHint"></div></div>
+        <div class="fld"><label for="f_fidA">FID aktif aktual (%)</label><input id="f_fidA" data-f="fidA" type="number" inputmode="decimal" step="any" placeholder="mis. 1,45"><div class="tgt" id="fidTgt"></div></div>
+        <div class="fld"><label for="f_epdA">EPD 30+ aktual (%)</label><input id="f_epdA" data-f="epdA" type="number" inputmode="decimal" step="any" placeholder="mis. 1,20"><div class="tgt" id="epdTgt"></div></div>
+        <div class="fld"><label for="f_asuransi">Insentif asuransi (Rp)</label><input id="f_asuransi" data-f="asuransi" type="number" inputmode="decimal" step="any" placeholder="0"></div>
+      </div>
+      <p class="hint">FID &amp; EPD diisi dalam persen. Jika belum diisi, insentif diterima dihitung 100% (netral). Taksasi dihitung otomatis dari penjualan bekas/multiguna: mobil Rp 20.000 dan motor Rp 5.000 per unit.</p>
+    </section>
+
+    <section class="card result" id="result"></section>
+
+    <details class="card">
+      <summary>Tabel acuan untukmu</summary>
+      <div class="inner" id="refs"></div>
+    </details>
+    <p class="foot">Angka ini hanya estimasi. Nilai resmi mengikuti perhitungan PPD.</p>
+  </div>
+</div>
+<div class="bar" id="bar" hidden><div><span>Estimasi diterima</span><b id="barTotal">Rp 0</b></div></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Data karyawan (dari Excel insentif; terkunci) ---------- */
+const STAFF = [{"nama": "ADE RANGGA GINTING", "jabatan": "CMO", "porto": "MCY", "join": "2025-11-16", "fidT": 2.5193, "epdT": 1.4375}, {"nama": "AGRI ERGIANTO PRASETYA", "jabatan": "CMO", "porto": "MCY", "join": "2026-08-16", "fidT": 2.6374, "epdT": 1.4113}, {"nama": "ALVIRA RAHMA RABINA", "jabatan": "BRO", "porto": "Captive", "join": "2026-08-01", "fidT": 0.42, "epdT": 0.25}, {"nama": "AMIRAH", "jabatan": "BRO", "porto": "Captive", "join": "2025-01-16", "fidT": 0.42, "epdT": 0.25}, {"nama": "ARDHIANSYAH DHIMAS RIANDHIKA", "jabatan": "CMO", "porto": "MCY", "join": "2016-04-15", "fidT": 2.5484, "epdT": 1.4313}, {"nama": "DIMAS ADI PRABOWO", "jabatan": "BRO", "porto": "Captive", "join": "2023-09-16", "fidT": 0.42, "epdT": 0.25}, {"nama": "IFAN FIRMAN MAULID", "jabatan": "CMO", "porto": "MCY", "join": "2026-08-01", "fidT": 2.5193, "epdT": 1.4375}, {"nama": "IQBAL RAMDHAN", "jabatan": "CRO", "porto": "Multiguna", "join": "2024-03-16", "fidT": 1.1995, "epdT": 1.0155}, {"nama": "ISMIRA NUR HAFIZHA", "jabatan": "BRO", "porto": "Captive", "join": "2025-12-16", "fidT": 0.42, "epdT": 0.25}, {"nama": "KHAIRUL ANWAR", "jabatan": "CMO", "porto": "MCY", "join": "2026-06-16", "fidT": 2.5193, "epdT": 1.4375}, {"nama": "MOCH REZA NUR FAUZY", "jabatan": "CMO", "porto": "MCY", "join": "2025-10-01", "fidT": 2.5193, "epdT": 1.4375}, {"nama": "MOHAMMAD HERDYN HIDAYATULLAH", "jabatan": "BRO", "porto": "Captive", "join": "2026-07-16", "fidT": 0.42, "epdT": 0.25}, {"nama": "MUKHAMAD RAMADHAN", "jabatan": "CRO", "porto": "Multiguna", "join": "2025-09-01", "fidT": 1.1995, "epdT": 1.0155}, {"nama": "NUR AHMAD ROMDHONI", "jabatan": "CRO", "porto": "Multiguna", "join": "2026-05-01", "fidT": 1.1995, "epdT": 1.0155}, {"nama": "RANGGA PUTRA PANGESTU", "jabatan": "CMO", "porto": "MCY", "join": "2026-06-16", "fidT": 2.5193, "epdT": 1.4375}, {"nama": "RASKITA", "jabatan": "CMO", "porto": "Syariah", "join": "2026-04-01", "fidT": 0.42, "epdT": 0.25}, {"nama": "RIKI ALIYUDDIN", "jabatan": "CMO", "porto": "MCY", "join": "2026-08-01", "fidT": 2.6374, "epdT": 1.4113}, {"nama": "SUMENDRA PRANATA KESUMA", "jabatan": "CMO", "porto": "CAR", "join": "2026-08-16", "fidT": 1.4724, "epdT": 0.8796}, {"nama": "WINDRIANY", "jabatan": "CMO", "porto": "Syariah", "join": "2023-07-01", "fidT": 0.42, "epdT": 0.25}];
+
+/* ---------- Aturan ---------- */
+// Tiering nilai per poin. Kolom: 0 = masa kerja ≤1 bln, 1 = >1 sd 2 bln, 2 = >2 bln. [batas atas poin, nilai per poin]
+const TIER = {
+  T1:{ nama:'CMO & CRO', cols:[
+    [[14,60000],[20,75000],[25,90000],[Infinity,105000]],
+    [[8,30000],[14,60000],[20,75000],[25,90000],[Infinity,105000]],
+    [[15,30000],[24,60000],[34,75000],[45,90000],[Infinity,105000]] ]},
+  T2:{ nama:'BRO & CMO Syariah', cols:[
+    [[10,60000],[14,75000],[18,90000],[Infinity,105000]],
+    [[6,30000],[10,60000],[14,75000],[18,90000],[Infinity,105000]],
+    [[11,30000],[17,60000],[24,75000],[32,90000],[Infinity,105000]] ]}
+};
+// Reward productivity & pembayaran insentif. pay: [min unit, persen dibayarkan]; rew: [min unit, min unit khusus, reward per unit]
+const PROD = {
+  MCY:{ nama:'CMO MCY', special:'MMCY', pay:[[0,0],[10,.85],[17,1]],
+        rew:[[25,0,15000],[25,1,25000],[28,3,35000]],
+        rows:[['<10','',0,'Tidak dibayarkan'],['10 – <17','',0,'85%'],['17 – <25','',0,'100%'],['Min 25','',15000,'100%'],['Min 25','Ada unit MMCY',25000,'100%'],['Min 28','Min 3 unit MMCY',35000,'100%']] },
+  CAR:{ nama:'CMO CAR', special:'MCAR', pay:[[0,0],[3,.85],[7,1]],
+        rew:[[10,0,45000],[10,1,75000],[11,1,105000]],
+        rows:[['<3','',0,'Tidak dibayarkan'],['3 – <7','',0,'85%'],['7 – <10','',0,'100%'],['Min 10','',45000,'100%'],['Min 10','Ada unit MCAR',75000,'100%'],['Min 11','Ada unit MCAR',105000,'100%']] },
+  CRO:{ nama:'CRO', special:null, pay:[[0,0],[10,.85],[17,1]],
+        rew:[[25,0,25000],[28,0,35000]],
+        rows:[['<10','',0,'Tidak dibayarkan'],['10 – <17','',0,'85%'],['17 – <25','',0,'100%'],['Min 25','',25000,'100%'],['Min 28','',35000,'100%']] },
+  BRO:{ nama:'BRO & CMO Syariah', special:null, pay:[[0,0],[7,.85],[12,1]],
+        rew:[[18,0,25000],[20,0,35000]],
+        rows:[['<7','',0,'Tidak dibayarkan'],['7 – <12','',0,'85%'],['12 – <18','',0,'100%'],['Min 18','',25000,'100%'],['Min 20','',35000,'100%']] }
+};
+const NEW_EXEMPT_MONTHS = 3;                 // karyawan baru dibebaskan dari penalti produktivitas (asumsi dari data September)
+// Reward & Punishment: total achievement EPD & FID aktif → % insentif diterima
+const RP_TIERS = [[1.10,1.15],[1.00,1.00],[0.85,0.85],[0.70,0.65],[-Infinity,0.35]];
+const RP_ROWS = [['<70%','35%'],['70% – <85%','65%'],['85% – <100%','85%'],['100% – <110%','100%'],['≥110%','115%']];
+// Konversi pokok hutang (PH) → poin. [batas atas PH, poin]
+const CONV = {
+  motorBaru:{ nama:'Motor Baru',                  tiers:[[35e6,1],[60e6,2],[150e6,3],[300e6,5],[Infinity,7]] },
+  motorBekas:{ nama:'Motor Bekas / Multiguna',    tiers:[[25e6,1],[50e6,2],[120e6,3],[300e6,5],[Infinity,7]] },
+  mobilBaru:{ nama:'Mobil Baru',                  tiers:[[375e6,4],[700e6,6],[Infinity,7]] },
+  mobilBekas:{ nama:'Mobil Bekas / Multiguna',    tiers:[[200e6,4],[500e6,6],[Infinity,7]] }
+};
+const SALES_KEYS=[]; Object.keys(CONV).forEach(c=>CONV[c].tiers.forEach((_,k)=>SALES_KEYS.push(c+'_'+k)));
+const TAKSASI={mobil:20000,motor:5000};
+const UNIT_BOOKING={motor:1,mobil:3};   // 1 unit motor = 1 unit sales booking, 1 unit mobil = 3   // per unit penjualan bekas/multiguna yang terealisasi
+const rangeJt=tiers=>{ let prev=0; return tiers.map(([mx,pt])=>{ const lbl=prev===0?'≤ '+mx/1e6+' jt':(mx===Infinity?'> '+prev/1e6+' jt':'> '+prev/1e6+' – '+mx/1e6+' jt'); prev=mx; return [lbl,pt]; }); };
+const BAND_LABEL = ['≤1 bulan','>1 sd 2 bulan','>2 bulan'];
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+/* ---------- Util ---------- */
+const $ = s => document.querySelector(s);
+const num = x => { const n = parseFloat(x); return isFinite(n)?n:0; };
+const has = x => x!=='' && x!=null && isFinite(parseFloat(x));
+const rp = n => (n<0?'-':'')+'Rp '+Math.abs(Math.round(n)).toLocaleString('id-ID');
+const dec = (x,d) => x.toFixed(d).replace('.',',');
+const pct = x => dec(x*100,1)+'%';
+function parseISO(s){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||''); return m? new Date(+m[1],+m[2]-1,+m[3]) : null; }
+function fmtDate(s){ const d=parseISO(s); return d? `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}` : '-'; }
+
+/* ---------- Periode ---------- */
+let period='';
+const currentPeriod=()=>{ const n=new Date(); return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0'); };
+function periodEndExclusive(){ const m=/^(\d{4})-(\d{2})$/.exec(period); return new Date(+m[1],+m[2],1); }
+function periodLabel(){ return BULAN[+period.slice(5)-1]+' '+period.slice(0,4); }
+function monthsWorked(join,endEx){
+  let m=(endEx.getFullYear()-join.getFullYear())*12+(endEx.getMonth()-join.getMonth());
+  const dd=endEx.getDate()-join.getDate(); let frac;
+  if(dd>=0) frac=dd/30;
+  else { m-=1; const dim=new Date(endEx.getFullYear(),endEx.getMonth(),0).getDate(); frac=(dim+dd)/30; }
+  return m+frac;
+}
+
+/* ---------- Perhitungan ---------- */
+const prodKey = p => (p.jabatan==='BRO'||p.porto==='Syariah')?'BRO' : p.jabatan==='CRO'?'CRO' : p.porto==='CAR'?'CAR' : 'MCY';
+function tarifOf(tbl,band,poin){ if(!(poin>0)) return 0; for(const [mx,v] of tbl.cols[band]) if(poin<=mx) return v; return 0; }
+function rpFactor(P){ for(const [min,f] of RP_TIERS) if(P>=min) return f; return RP_TIERS[RP_TIERS.length-1][1]; }
+function convPoin(conv,ph){ for(const [mx,pt] of CONV[conv].tiers) if(ph<=mx) return pt; return 0; }
+function salesGroups(p){
+  const k=prodKey(p), cro=k==='CRO';
+  const motor={id:'motor',title:'Penjualan Motor',fields:cro?[{f:'motorBekas',label:'Motor Multiguna',conv:'motorBekas'}]:[{f:'motorBaru',label:'Motor Baru',conv:'motorBaru'},{f:'motorBekas',label:'Motor Bekas / Multiguna',conv:'motorBekas'}]};
+  const mobil={id:'mobil',title:'Penjualan Mobil',fields:cro?[{f:'mobilBekas',label:'Mobil Multiguna',conv:'mobilBekas'}]:[{f:'mobilBaru',label:'Mobil Baru',conv:'mobilBaru'},{f:'mobilBekas',label:'Mobil Bekas / Multiguna',conv:'mobilBekas'}]};
+  return k==='MCY'?[motor] : k==='CAR'?[mobil] : [motor,mobil];
+}
+
+function calc(p,i){
+  const m=monthsWorked(parseISO(p.join),periodEndExclusive());
+  const band=m<=1?0:(m<=2?1:2);
+  const tbl=(p.jabatan==='BRO'||p.porto==='Syariah')?TIER.T2:TIER.T1;
+  const poin=num(i.poin), tarif=tarifOf(tbl,band,poin), H=tarif*poin, I=num(i.holistic);
+
+  // Kualitas FID & EPD
+  const ready=has(i.fidA)&&has(i.epdA)&&p.fidT>0&&p.epdT>0;
+  let N=null,O=null,P=null,Q=1;
+  if(ready){ N=0.7*(2-num(i.fidA)/p.fidT); O=0.3*(2-num(i.epdA)/p.epdT); P=N+O; Q=rpFactor(P); }
+  const R=(H+I)*Q;
+
+  // Produktivitas
+  const key=prodKey(p), pr=PROD[key], unit=num(i.unit), special=num(i.special);
+  let pay0=0; for(const [mn,f] of pr.pay) if(unit>=mn) pay0=f;
+  const exempt = m<=NEW_EXEMPT_MONTHS && pay0<1;
+  const pay = exempt?1:pay0;
+  let rate=0; for(const [mn,sp,r] of pr.rew) if(unit>=mn && (!pr.special||special>=sp) && r>rate) rate=r;
+  const U=rate*unit;
+
+  const S=num(i.taksasi), W=(R+S+U)*pay;
+  const X=num(i.autodebet), Y=Math.abs(num(i.qca)), Z=num(i.asuransi), AA=num(i.kekurangan), AB=num(i.rev);
+  const total=W+X-Y+Z+AA+AB;
+  return {m,band,tbl,key,pr,poin,tarif,H,I,ready,N,O,P,Q,R,unit,special,pay0,pay,exempt,rate,U,S,W,X,Y,Z,AA,AB,total};
+}
+
+function tips(c){
+  const out=[];
+  // poin: tarif berikutnya
+  if(c.poin>0){
+    const col=c.tbl.cols[c.band]; const k=col.findIndex(([mx])=>c.poin<=mx);
+    if(k>=0 && k<col.length-1){ const need=Math.floor(col[k][0])+1-c.poin; out.push(`${dec(need,need%1?1:0)} poin lagi → tarif naik ke ${rp(col[k+1][1])} per poin`); }
+  }
+  // pembayaran insentif
+  if(!c.exempt && c.pay<1){
+    const nx=c.pr.pay.find(([mn,f])=>f>c.pay0);
+    if(nx) out.push(`${nx[0]-c.unit} unit booking lagi → insentif dibayarkan ${Math.round(nx[1]*100)}%`);
+  }
+  // reward
+  const nxt=c.pr.rew.filter(([mn,sp,r])=>r>c.rate).sort((a,b)=>a[2]-b[2])[0];
+  if(nxt){
+    const u=Math.max(0,nxt[0]-c.unit), s=c.pr.special?Math.max(0,nxt[1]-c.special):0;
+    let t=[]; if(u) t.push(`${u} unit booking`); if(s) t.push(`${s} unit ${c.pr.special}`);
+    out.push(`Reward ${rp(nxt[2])} per unit: butuh ${t.join(' dan ')} lagi`);
+  }
+  if(c.ready){
+    const idx=RP_TIERS.findIndex(([min])=>c.P>=min);
+    if(idx>0){ const [mn,f]=RP_TIERS[idx-1]; out.push(`Capai achievement FID+EPD ${Math.round(mn*100)}% (sekarang ${pct(c.P)}) → insentif diterima ${Math.round(f*100)}%`); }
+  }
+  return out.slice(0,4);
+}
+
+/* ---------- Tampilan ---------- */
+let person=null, inp={};
+const NUMF=['poin','unit','special','fidA','epdA','taksasi','asuransi','holistic','autodebet','qca','kekurangan','rev'];
+const EDITABLE=['poin','unit','special','fidA','epdA','asuransi',...SALES_KEYS];
+let poinAuto=false, unitAuto=false;
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtJt=n=>(n/1e6).toLocaleString('id-ID',{maximumFractionDigits:2})+' jt';
+
+function fillSelect(){
+  $('#who').innerHTML='<option value="">— pilih namamu —</option>'+STAFF.map((s,k)=>`<option value="${k}">${esc(s.nama)}</option>`).join('');
+}
+function renderSales(){
+  $('#sales').innerHTML=salesGroups(person).map(g=>`<section class="card"><h2>${g.title}</h2>
+    <p class="hint" style="margin:0 0 12px">Isi jumlah unit yang terjual di tiap rentang pokok hutang (PH). Kosongkan bila tidak ada.</p>
+    ${g.fields.map(fl=>`<div class="tf"><div class="tf-h">${fl.label}</div>${rangeJt(CONV[fl.conv].tiers).map(([lbl,pt],k)=>`<label class="trow" for="f_${fl.conv}_${k}"><span>PH ${lbl}<small>${pt} poin per unit</small></span><input id="f_${fl.conv}_${k}" data-f="${fl.conv}_${k}" type="number" inputmode="numeric" min="0" step="1" placeholder="0"></label>`).join('')}</div>`).join('')}
+    <div class="subtot" id="st_${g.id}"></div></section>`).join('');
+}
+function salesCalc(){
+  let poin=0,count=0,mobilBekas=0,motorBekas=0,motor=0,mobil=0;
+  salesGroups(person).forEach(g=>g.fields.forEach(fl=>CONV[fl.conv].tiers.forEach(([mx,pt],k)=>{
+    const n=num(inp[fl.conv+'_'+k]); poin+=n*pt; count+=n;
+    if(fl.conv.startsWith('motor')) motor+=n; else mobil+=n;
+    if(fl.conv==='mobilBekas') mobilBekas+=n; if(fl.conv==='motorBekas') motorBekas+=n;
+  })));
+  return {poin,count,mobilBekas,motorBekas,unit:motor*UNIT_BOOKING.motor+mobil*UNIT_BOOKING.mobil,taksasi:mobilBekas*TAKSASI.mobil+motorBekas*TAKSASI.motor};
+}
+function updateSales(){
+  const s=salesCalc();
+  salesGroups(person).forEach(g=>{
+    let gc=0,gp=0,gt=0;
+    const ub=g.id==='motor'?UNIT_BOOKING.motor:UNIT_BOOKING.mobil;
+    g.fields.forEach(fl=>CONV[fl.conv].tiers.forEach(([mx,pt],k)=>{ const n=num(inp[fl.conv+'_'+k]); gc+=n; gp+=n*pt;
+      if(fl.conv==='mobilBekas') gt+=n*TAKSASI.mobil; if(fl.conv==='motorBekas') gt+=n*TAKSASI.motor; }));
+    $('#st_'+g.id).textContent=`${gc} unit · ${gp} poin · ${gc*ub} unit booking`+(gt?` · taksasi ${rp(gt)}`:'');
+  });
+  inp.taksasi=s.taksasi||'';
+  if(s.count>0){ inp.poin=s.poin; poinAuto=true; $('#f_poin').value=s.poin; }
+  else if(poinAuto){ inp.poin=''; poinAuto=false; $('#f_poin').value=''; }
+  if(s.count>0){ inp.unit=s.unit; unitAuto=true; $('#f_unit').value=s.unit; }
+  else if(unitAuto){ inp.unit=''; unitAuto=false; $('#f_unit').value=''; }
+}
+function setPerson(k){
+  person = k===''? null : STAFF[+k];
+  inp={}; poinAuto=false; unitAuto=false; [...NUMF,...SALES_KEYS].forEach(f=>inp[f]='');
+  $('#profile').hidden=$('#work').hidden=$('#bar').hidden=!person;
+  if(!person){ $('#sales').innerHTML=''; return; }
+  renderSales();
+  const saved=load();
+  if(saved&&saved.nama===person.nama&&saved.period===period&&saved.inp)
+    EDITABLE.forEach(f=>{ const v=saved.inp[f]; if(v!=null&&v!=='') inp[f]=v; });
+  EDITABLE.forEach(f=>{ const el=$('#f_'+f); if(el) el.value=(inp[f]===''||inp[f]==null)?'':inp[f]; });
+  const c=calc(person,inp), pr=c.pr, mm=Math.floor(c.m);
+  const lama = mm>=12 ? `${Math.floor(mm/12)} tahun ${mm%12} bulan` : `${mm} bulan`;
+  const chip=(k,v)=>`<div class="chip"><small>🔒 ${k}</small><b>${v}</b></div>`;
+  $('#profile').innerHTML=chip('Jabatan',person.jabatan)+chip('Portofolio',person.porto)+chip('Join date',fmtDate(person.join))+chip('Masa kerja',lama)+chip('Kategori tarif',BAND_LABEL[c.band]);
+  $('#spWrap').hidden=!pr.special;
+  if(pr.special){ $('#spLabel').textContent='Unit '+pr.special; $('#spHint').textContent='Jumlah unit '+pr.special+' dari total unit booking (syarat reward).'; }
+  $('#fidTgt').textContent=person.fidT>0?'Target: '+dec(person.fidT,2)+'%':'';
+  $('#epdTgt').textContent=person.epdT>0?'Target: '+dec(person.epdT,2)+'%':'';
+  updateSales(); recalc();
+}
+
+function row(label,detail,val,cls){ return `<tr class="${cls||''}"><td>${label}${detail?`<small>${detail}</small>`:''}</td><td>${val}</td></tr>`; }
+function recalc(){
+  if(!person) return;
+  const c=calc(person,inp);
+  const L=[];
+  L.push(row('Insentif handling',`${dec(c.poin,c.poin%1?1:0)} poin × ${rp(c.tarif)}`,rp(c.H)));
+  if(c.I) L.push(row('+ Holistic','',rp(c.I)));
+  L.push(row('× Insentif diterima (R&amp;P FID &amp; EPD)', c.ready?`Achievement FID+EPD ${pct(c.P)}`:'Isi FID &amp; EPD aktual untuk menghitung', Math.round(c.Q*100)+'%'));
+  L.push(row('Insentif dengan pengali','',rp(c.R),'sub'));
+  if(c.S){ const sc=salesCalc(); const d=[sc.mobilBekas?`${sc.mobilBekas} mobil × ${rp(TAKSASI.mobil)}`:'',sc.motorBekas?`${sc.motorBekas} motor × ${rp(TAKSASI.motor)}`:''].filter(Boolean).join(' + ');
+    L.push(row('+ Taksasi (penjualan bekas/multiguna)',d,rp(c.S))); }
+  L.push(row('+ Reward produktivitas', c.rate?`${dec(c.unit,c.unit%1?1:0)} unit × ${rp(c.rate)}`:'Belum memenuhi syarat reward', rp(c.U)));
+  L.push(row('× Pembayaran insentif', c.exempt?`Karyawan baru (≤${NEW_EXEMPT_MONTHS} bulan) dibebaskan penalti`:`${dec(c.unit,c.unit%1?1:0)} unit sales booking`, c.pay===0?'Tidak dibayarkan':Math.round(c.pay*100)+'%'));
+  L.push(row('Total insentif','',rp(c.W),'sub'));
+  if(c.X) L.push(row('+ Auto debet','',rp(c.X)));
+  if(c.Y) L.push(row('− Potongan QCA','','−'+rp(c.Y)));
+  if(c.Z) L.push(row('+ Asuransi','',rp(c.Z)));
+  if(c.AA) L.push(row('+ Kekurangan asuransi','',rp(c.AA)));
+  if(c.AB) L.push(row('+ Revisi PPD','',rp(c.AB)));
+  L.push(row('Estimasi diterima','',rp(c.total),'tot'));
+
+  const badges=[];
+  if(c.exempt) badges.push('<span class="badge ok">Bebas penalti karyawan baru</span>');
+  else if(c.pay===0) badges.push('<span class="badge bad">Insentif tidak dibayarkan</span>');
+  else if(c.pay<1) badges.push('<span class="badge warn">Insentif dibayarkan 85%</span>');
+  else badges.push('<span class="badge ok">Insentif dibayarkan 100%</span>');
+  if(c.rate) badges.push(`<span class="badge ok">Reward ${rp(c.rate)}/unit</span>`);
+  if(!c.ready) badges.push('<span class="badge warn">FID &amp; EPD belum diisi</span>');
+
+  const t=tips(c);
+  $('#result').innerHTML=`<h2>Hasil estimasi</h2><div class="cap">Estimasi diterima</div><div class="big">${rp(c.total)}</div>
+    <div class="status">${badges.join('')}</div>
+    <table class="bd">${L.join('')}</table>
+    ${t.length?`<div class="tips"><b>Biar naik</b><ul>${t.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}`;
+  $('#barTotal').textContent=rp(c.total);
+  renderRefs(c);
+}
+
+function rangeLabels(col){
+  const map={}; let prev=0;
+  col.forEach(([mx,v])=>{ map[v]= mx===Infinity? '>'+prev : (prev+1===mx? String(mx) : (prev+1)+'–'+mx); prev=mx; });
+  return map;
+}
+function renderRefs(c){
+  const L=c.tbl.cols.map(rangeLabels), vals=[30000,60000,75000,90000,105000];
+  const heads=BAND_LABEL.map((b,k)=>`<th class="${k===c.band?'hl':''}">Masa kerja ${b}</th>`).join('');
+  const t1=`<table><caption>Nilai per poin · ${c.tbl.nama}</caption><thead><tr>${heads}<th>Per poin</th></tr></thead><tbody>${
+    vals.map(v=>`<tr>${L.map((m,k)=>`<td class="${k===c.band?(v===c.tarif?'now':'hl'):''}">${m[v]||'–'}</td>`).join('')}<td><b>${v.toLocaleString('id-ID')}</b></td></tr>`).join('')}</tbody></table>`;
+  const t2=`<table><caption>Reward productivity · ${c.pr.nama}</caption><thead><tr><th>Sales booking (unit)</th><th>Persyaratan</th><th>Reward / unit</th><th>Pembayaran insentif</th></tr></thead><tbody>${
+    c.pr.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]||'–'}</td><td>${r[2]?r[2].toLocaleString('id-ID'):'0'}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table>`;
+  const rpNow=c.ready?RP_TIERS.findIndex(([min])=>c.P>=min):-1;
+  const t3=`<table><caption>Reward &amp; Punishment · total achievement FID+EPD</caption><thead><tr><th>Tiering achievement</th><th>% insentif diterima</th></tr></thead><tbody>${
+    RP_ROWS.map((r,k)=>`<tr><td class="${4-k===rpNow?'now':''}">${r[0]}</td><td class="${4-k===rpNow?'now':''}">${r[1]}</td></tr>`).join('')}</tbody></table>`;
+  const convs=[]; salesGroups(person).forEach(g=>g.fields.forEach(fl=>convs.push(fl.conv)));
+  const t4=convs.map(cv=>`<table><caption>Konversi poin · ${CONV[cv].nama}</caption><thead><tr><th>Pokok hutang (PH)</th><th>Poin</th></tr></thead><tbody>${
+    rangeJt(CONV[cv].tiers).map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</tbody></table>`).map(t=>`<div class="ref">${t}</div>`).join('');
+  $('#refs').innerHTML=`<div class="ref">${t1}</div><div class="ref">${t2}</div><div class="ref">${t3}</div>${t4}`;
+}
+
+/* ---------- Event & simpan ---------- */
+$('#who').addEventListener('change',e=>setPerson(e.target.value));
+$('#work').addEventListener('input',e=>{
+  const el=e.target, f=el.dataset&&el.dataset.f; if(!f||!person) return;
+  inp[f]= el.dataset.t==='text' ? el.value : (el.value===''?'':parseFloat(el.value));
+  if(SALES_KEYS.includes(f)) updateSales();
+  recalc(); save();
+});
+const KEY='insentif-marketing-v2';
+function save(){ try{ const e={}; EDITABLE.forEach(f=>{ e[f]=inp[f]; }); localStorage.setItem(KEY,JSON.stringify({period,nama:person&&person.nama,inp:e})); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+
+(function boot(){
+  const q=new URLSearchParams(location.search).get('periode');
+  period=/^\d{4}-(0[1-9]|1[0-2])$/.test(q||'')?q:currentPeriod();
+  $('#periodLabel').textContent='Periode '+periodLabel();
+  fillSelect();
+  const s0=load();
+  if(s0&&s0.period===period&&s0.nama){ const k=STAFF.findIndex(s=>s.nama===s0.nama); if(k>=0){ $('#who').value=String(k); setPerson(String(k)); } }
+  window.InsentifReady=true;
+})();
+window.InsentifApp={STAFF,calc,convPoin,setPeriod:p=>{period=p;}};
+})();
+</script>
+</body>
+</html>
